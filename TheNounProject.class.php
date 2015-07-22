@@ -61,7 +61,7 @@
          * @access public
          * @param  string $key
          * @param  string $secret
-         * @param  boolean $debug
+         * @param  boolean $debug (default: false)
          * @return void
          */
         public function __construct($key, $secret, $debug = false)
@@ -77,7 +77,7 @@
          * @access protected
          * @param  string $path
          * @param  array $options (default: array())
-         * @return array|false
+         * @return false|array
          */
         public function _get($path, array $options = array())
         {
@@ -104,6 +104,32 @@
                 return false;
             }
             return json_decode($this->_connection->getLastResponse(), true);
+        }
+
+        /**
+         * getCollectionById
+         * 
+         * @access public
+         * @param  string $id
+         * @return array
+         */
+        public function getCollectionById($id)
+        {
+            $path = '/collection/' . ($id);
+            return $this->_get($path);
+        }
+
+        /**
+         * getCollectionBySlug
+         * 
+         * @access public
+         * @param  string $string
+         * @return array
+         */
+        public function getCollectionBySlug($slug)
+        {
+            $path = '/collection/' . ($slug);
+            return $this->_get($path);
         }
 
         /**
@@ -135,32 +161,6 @@
         }
 
         /**
-         * getCollectionById
-         * 
-         * @access public
-         * @param  string $id
-         * @return array
-         */
-        public function getCollectionById($id)
-        {
-            $path = '/collection/' . ($id);
-            return $this->_get($path);
-        }
-
-        /**
-         * getCollectionBySlug
-         * 
-         * @access public
-         * @param  string $string
-         * @return array
-         */
-        public function getCollectionBySlug($slug)
-        {
-            $path = '/collection/' . ($slug);
-            return $this->_get($path);
-        }
-
-        /**
          * getIconById
          * 
          * @access public
@@ -187,19 +187,6 @@
         }
 
         /**
-         * getRecentIcons
-         * 
-         * @access public
-         * @param  array $options
-         * @return array
-         */
-        public function getRecentIcons(array $options)
-        {
-            $path = '/icons/recent_uploads';
-            return $this->_get($path, $options);
-        }
-
-        /**
          * getIconsByTerm
          * 
          * @access public
@@ -213,6 +200,19 @@
             // if ($options['limit_to_public_domain'] === true) {
             //     $options['limit_to_public_domain'] = '1';
             // }
+            return $this->_get($path, $options);
+        }
+
+        /**
+         * getRecentIcons
+         * 
+         * @access public
+         * @param  array $options
+         * @return array
+         */
+        public function getRecentIcons(array $options)
+        {
+            $path = '/icons/recent_uploads';
             return $this->_get($path, $options);
         }
 
@@ -268,4 +268,3 @@
             return $this->_get($path, $options);
         }
     }
-
