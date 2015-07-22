@@ -16,6 +16,14 @@
     class TheNounProject
     {
         /**
+         * _associative
+         * 
+         * @var    boolean
+         * @access protected
+         */
+        protected $_associative;
+
+        /**
          * _base
          * 
          * @var    string
@@ -62,13 +70,19 @@
          * @param  string $key
          * @param  string $secret
          * @param  boolean $debug (default: false)
+         * @param  boolean $associative (default: true)
          * @return void
          */
-        public function __construct($key, $secret, $debug = false)
-        {
+        public function __construct(
+            $key,
+            $secret,
+            $debug = false,
+            $associative = true
+        ) {
             $this->_key = $key;
             $this->_secret = $secret;
             $this->_debug = $debug;
+            $this->_associative = $associative;
         }
 
         /**
@@ -77,7 +91,7 @@
          * @access protected
          * @param  string $path
          * @param  array $options (default: array())
-         * @return false|array
+         * @return false|array|stdClass
          */
         public function _get($path, array $options = array())
         {
@@ -103,7 +117,26 @@
                 error_log($exception->getMessage());
                 return false;
             }
-            return json_decode($this->_connection->getLastResponse(), true);
+            return json_decode(
+                $this->_connection->getLastResponse(),
+                $this->_associative
+            );
+        }
+
+        /**
+         * getAllCollections
+         * 
+         * @access public
+         * @param  array $options
+         * @return array|stdClass
+         */
+        public function getAllCollections(array $options = array())
+        {
+            $path = '/collections';
+            $response = $this->_get($path, $options);
+            return $this->_associative
+                ? $response['collections']
+                : $response->collections;
         }
 
         /**
@@ -111,12 +144,15 @@
          * 
          * @access public
          * @param  string $id
-         * @return array
+         * @return array|stdClass
          */
         public function getCollectionById($id)
         {
             $path = '/collection/' . ($id);
-            return $this->_get($path);
+            $response = $this->_get($path);
+            return $this->_associative
+                ? $response['collection']
+                : $response->collection;
         }
 
         /**
@@ -124,12 +160,15 @@
          * 
          * @access public
          * @param  string $string
-         * @return array
+         * @return array|stdClass
          */
         public function getCollectionBySlug($slug)
         {
             $path = '/collection/' . ($slug);
-            return $this->_get($path);
+            $response = $this->_get($path);
+            return $this->_associative
+                ? $response['collection']
+                : $response->collection;
         }
 
         /**
@@ -137,13 +176,16 @@
          * 
          * @access public
          * @param  string $id
-         * @param  array $options
-         * @return array
+         * @param  array $options (default: array())
+         * @return array|stdClass
          */
-        public function getCollectionIconsById($id, array $options)
+        public function getCollectionIconsById($id, array $options = array())
         {
             $path = '/collection/' . ($id) . '/icons';
-            return $this->_get($path, $options);
+            $response = $this->_get($path, $options);
+            return $this->_associative
+                ? $response['icons']
+                : $response->icons;
         }
 
         /**
@@ -152,12 +194,17 @@
          * @access public
          * @param  string $slug
          * @param  array $options
-         * @return array
+         * @return array|stdClass
          */
-        public function getCollectionIconsBySlug($slug, array $options)
-        {
+        public function getCollectionIconsBySlug(
+            $slug,
+            array $options = array()
+        ) {
             $path = '/collection/' . ($slug) . '/icons';
-            return $this->_get($path, $options);
+            $response = $this->_get($path, $options);
+            return $this->_associative
+                ? $response['icons']
+                : $response->icons;
         }
 
         /**
@@ -165,12 +212,15 @@
          * 
          * @access public
          * @param  string $id
-         * @return array
+         * @return array|stdClass
          */
         public function getIconById($id)
         {
             $path = '/icon/' . ($id);
-            return $this->_get($path);
+            $response = $this->_get($path);
+            return $this->_associative
+                ? $response['icon']
+                : $response->icon;
         }
 
         /**
@@ -178,12 +228,15 @@
          * 
          * @access public
          * @param  string $term
-         * @return array
+         * @return array|stdClass
          */
         public function getIconByTerm($term)
         {
             $path = '/icon/' . ($term);
-            return $this->_get($path);
+            $response = $this->_get($path);
+            return $this->_associative
+                ? $response['icon']
+                : $response->icon;
         }
 
         /**
@@ -191,36 +244,42 @@
          * 
          * @access public
          * @param  string $term
-         * @param  array $options
-         * @return array
+         * @param  array $options (default: array())
+         * @return array|stdClass
          */
-        public function getIconsByTerm($term, array $options)
+        public function getIconsByTerm($term, array $options = array())
         {
             $path = '/icons/' . ($term);
-            // if ($options['limit_to_public_domain'] === true) {
-            //     $options['limit_to_public_domain'] = '1';
-            // }
-            return $this->_get($path, $options);
+            if (isset($options['limit_to_public_domain']) === true) {
+                $options['limit_to_public_domain'] = (int) $options['limit_to_public_domain'];
+            }
+            $response = $this->_get($path, $options);
+            return $this->_associative
+                ? $response['icons']
+                : $response->icons;
         }
 
         /**
          * getRecentIcons
          * 
          * @access public
-         * @param  array $options
-         * @return array
+         * @param  array $options (default: array())
+         * @return array|stdClass
          */
-        public function getRecentIcons(array $options)
+        public function getRecentIcons(array $options = array())
         {
             $path = '/icons/recent_uploads';
-            return $this->_get($path, $options);
+            $response = $this->_get($path, $options);
+            return $this->_associative
+                ? $response['icons']
+                : $response->icons;
         }
 
         /**
          * getUsage
          * 
          * @access public
-         * @return array
+         * @return array|stdClass
          */
         public function getUsage()
         {
@@ -233,12 +292,15 @@
          * @access public
          * @param  string $userId
          * @param  string $slug
-         * @return array
+         * @return array|stdClass
          */
         public function getUserCollection($userId, $slug)
         {
             $path = '/user/' . ($userId) . '/collections/' . ($slug);
-            return $this->_get($path);
+            $response = $this->_get($path);
+            return $this->_associative
+                ? $response['collection']
+                : $response->collection;
         }
 
         /**
@@ -246,12 +308,15 @@
          * 
          * @access public
          * @param  string $userId
-         * @return array
+         * @return array|stdClass
          */
         public function getUserCollections($userId)
         {
             $path = '/user/' . ($userId) . '/collections';
-            return $this->_get($path);
+            $response = $this->_get($path);
+            return $this->_associative
+                ? $response['collections']
+                : $response->collections;
         }
 
         /**
@@ -259,12 +324,15 @@
          * 
          * @access public
          * @param  string $username
-         * @param  array $options
-         * @return array
+         * @param  array $options (default: array())
+         * @return array|stdClass
          */
-        public function getUserUploads($username, array $options)
+        public function getUserUploads($username, array $options = array())
         {
             $path = '/user/' . ($username) . '/uploads';
-            return $this->_get($path, $options);
+            $response = $this->_get($path, $options);
+            return $this->_associative
+                ? $response['uploads']
+                : $response->uploads;
         }
     }
