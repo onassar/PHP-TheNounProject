@@ -9,8 +9,12 @@ Simple PHP wrapper for The Noun Project's API, using PECL's OAuth extension for 
     require_once '/path/to/TheNounProject.class.php';
     $key  = '*****';
     $secret = '*****';
-    $nounProject = (new TheNounProject($key, $secret));
-    print_r($nounProject->getIconsByTerm('happy', array('limit' => 10)));
+    $theNounProject = (new TheNounProject($key, $secret));
+    $icons = $theNounProject->getIconsByTerm(
+        'happy',
+        array('limit' => 10)
+    );
+    print_r($icons);
     exit(0);
 
 ```
