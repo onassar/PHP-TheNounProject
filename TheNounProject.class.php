@@ -12,6 +12,8 @@
      * 
      * @author Oliver Nassar <onassar@gmail.com>
      * @see    https://github.com/onassar/PHP-TheNounProject
+     * @see    https://pecl.php.net/package/oauth
+     * @see    http://php.net/manual/en/book.oauth.php
      */
     class TheNounProject
     {
