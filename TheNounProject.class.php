@@ -115,7 +115,7 @@
                     $options,
                     OAUTH_HTTP_METHOD_GET
                 );
-            } catch(OAuthException $e) {
+            } catch(OAuthException $exception) {
                 error_log($exception->getMessage());
                 return false;
             }
