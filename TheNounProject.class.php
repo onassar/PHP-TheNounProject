@@ -12,8 +12,6 @@
      * 
      * @author Oliver Nassar <onassar@gmail.com>
      * @see    https://github.com/onassar/PHP-TheNounProject
-     * @see    https://pecl.php.net/package/oauth
-     * @see    http://php.net/manual/en/book.oauth.php
      */
     class TheNounProject
     {
@@ -130,12 +128,15 @@
          * 
          * @access public
          * @param  array $options
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getAllCollections(array $options = array())
         {
             $path = '/collections';
             $response = $this->_get($path, $options);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['collections']
                 : $response->collections;
@@ -146,12 +147,15 @@
          * 
          * @access public
          * @param  string $id
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getCollectionById($id)
         {
             $path = '/collection/' . ($id);
             $response = $this->_get($path);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['collection']
                 : $response->collection;
@@ -162,12 +166,15 @@
          * 
          * @access public
          * @param  string $string
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getCollectionBySlug($slug)
         {
             $path = '/collection/' . ($slug);
             $response = $this->_get($path);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['collection']
                 : $response->collection;
@@ -179,12 +186,15 @@
          * @access public
          * @param  string $id
          * @param  array $options (default: array())
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getCollectionIconsById($id, array $options = array())
         {
             $path = '/collection/' . ($id) . '/icons';
             $response = $this->_get($path, $options);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['icons']
                 : $response->icons;
@@ -196,7 +206,7 @@
          * @access public
          * @param  string $slug
          * @param  array $options
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getCollectionIconsBySlug(
             $slug,
@@ -204,6 +214,9 @@
         ) {
             $path = '/collection/' . ($slug) . '/icons';
             $response = $this->_get($path, $options);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['icons']
                 : $response->icons;
@@ -214,12 +227,15 @@
          * 
          * @access public
          * @param  string $id
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getIconById($id)
         {
             $path = '/icon/' . ($id);
             $response = $this->_get($path);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['icon']
                 : $response->icon;
@@ -230,12 +246,15 @@
          * 
          * @access public
          * @param  string $term
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getIconByTerm($term)
         {
             $path = '/icon/' . ($term);
             $response = $this->_get($path);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['icon']
                 : $response->icon;
@@ -247,7 +266,7 @@
          * @access public
          * @param  string $term
          * @param  array $options (default: array())
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getIconsByTerm($term, array $options = array())
         {
@@ -256,6 +275,9 @@
                 $options['limit_to_public_domain'] = (int) $options['limit_to_public_domain'];
             }
             $response = $this->_get($path, $options);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['icons']
                 : $response->icons;
@@ -266,12 +288,15 @@
          * 
          * @access public
          * @param  array $options (default: array())
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getRecentIcons(array $options = array())
         {
             $path = '/icons/recent_uploads';
             $response = $this->_get($path, $options);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['icons']
                 : $response->icons;
@@ -281,11 +306,16 @@
          * getUsage
          * 
          * @access public
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getUsage()
         {
-            return $this->_get('/oauth/usage');
+            $path = '/oauth/usage';
+            $response = $this->_get($path);
+            if ($response === false) {
+                return false;
+            }
+            return $response;
         }
 
         /**
@@ -294,12 +324,15 @@
          * @access public
          * @param  string $userId
          * @param  string $slug
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getUserCollection($userId, $slug)
         {
             $path = '/user/' . ($userId) . '/collections/' . ($slug);
             $response = $this->_get($path);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['collection']
                 : $response->collection;
@@ -310,12 +343,15 @@
          * 
          * @access public
          * @param  string $userId
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getUserCollections($userId)
         {
             $path = '/user/' . ($userId) . '/collections';
             $response = $this->_get($path);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['collections']
                 : $response->collections;
@@ -327,12 +363,15 @@
          * @access public
          * @param  string $username
          * @param  array $options (default: array())
-         * @return array|stdClass
+         * @return false|array|stdClass
          */
         public function getUserUploads($username, array $options = array())
         {
             $path = '/user/' . ($username) . '/uploads';
             $response = $this->_get($path, $options);
+            if ($response === false) {
+                return false;
+            }
             return $this->_associative
                 ? $response['uploads']
                 : $response->uploads;
