@@ -129,7 +129,7 @@
          * getAllCollections
          * 
          * @access public
-         * @param  array $options
+         * @param  array $options (default: array())
          * @return false|array|stdClass
          */
         public function getAllCollections(array $options = array())
@@ -207,7 +207,7 @@
          * 
          * @access public
          * @param  string $slug
-         * @param  array $options
+         * @param  array $options (default: array())
          * @return false|array|stdClass
          */
         public function getCollectionIconsBySlug(
