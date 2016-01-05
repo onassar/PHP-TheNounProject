@@ -10,6 +10,7 @@
      * 
      * PHP OAuth wrapper for The Noun Project, using PECL OAuth library
      * 
+     * @note   icon_url urls expire 24 hours after received
      * @author Oliver Nassar <onassar@gmail.com>
      * @see    https://github.com/onassar/PHP-TheNounProject
      * @see    https://pecl.php.net/package/oauth
