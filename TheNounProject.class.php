@@ -32,7 +32,7 @@
          * @var    string
          * @access protected
          */
-        protected $_base = 'http://api.thenounproject.com';
+        protected $_base = 'https://api.thenounproject.com';
 
         /**
          * _connection
@@ -98,18 +98,7 @@
          */
         public function _get($path, array $options = array())
         {
-            if (is_null($this->_connection)) {
-                $this->_connection = (new OAuth(
-                    $this->_key,
-                    $this->_secret,
-                    OAUTH_SIG_METHOD_HMACSHA1,
-                    OAUTH_AUTH_TYPE_URI
-                ));
-                if ($this->_debug === true) {
-                    $this->_connection->enableDebug();
-                }
-                $this->_connection->setNonce(rand());
-            }
+            $this->_setupConnection();
             try {
                 $this->_connection->fetch(
                     ($this->_base) . ($path),
@@ -124,6 +113,64 @@
                 $this->_connection->getLastResponse(),
                 $this->_associative
             );
+        }
+
+        /**
+         * _post
+         * 
+         * @access protected
+         * @param  string $path
+         * @param  array $data (default: array())
+         * @param  boolean $live (default: true)
+         * @return false|array|stdClass
+         */
+        public function _post($path, array $data = array(), $live = true)
+        {
+            $this->_setupConnection();
+            try {
+                $url = ($this->_base) . ($path);
+                if ($live === false) {
+                    $url .= '?test=1';
+                }
+                $this->_connection->fetch(
+                    $url,
+                    json_encode($data),
+                    OAUTH_HTTP_METHOD_POST,
+                    array(
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                    )
+                );
+            } catch(OAuthException $exception) {
+                error_log($exception->getMessage());
+                return false;
+            }
+            return json_decode(
+                $this->_connection->getLastResponse(),
+                $this->_associative
+            );
+        }
+
+        /**
+         * _setupConnection
+         * 
+         * @access protected
+         * @return void
+         */
+        public function _setupConnection()
+        {
+            if (is_null($this->_connection)) {
+                $this->_connection = new OAuth(
+                    $this->_key,
+                    $this->_secret,
+                    OAUTH_SIG_METHOD_HMACSHA1,
+                    OAUTH_AUTH_TYPE_URI
+                );
+                if ($this->_debug === true) {
+                    $this->_connection->enableDebug();
+                }
+                $this->_connection->setNonce(rand());
+            }
         }
 
         /**
@@ -186,6 +233,11 @@
         /**
          * getCollectionIconsById
          * 
+         * Requests icons for a specific collection, and for consistency with
+         * other API calls, if the response for an icon doesn't contain the
+         * it's associated collections, I scafold in the id of the current
+         * lookup.
+         * 
          * @access public
          * @param  string $id
          * @param  array $options (default: array())
@@ -198,6 +250,34 @@
             if ($response === false) {
                 return false;
             }
+
+            /**
+             * Normalizes the response when icons don't return collection
+             * details. Maybe this should not be done here, but it seemed silly
+             * for the response to not include the collections that icons are
+             * part of.
+             */
+            if ($this->_associative === true) {
+                foreach ($response['icons'] as &$icon) {
+                    if (isset($icon['collections']) === false) {
+                        $icon['collections'] = array();
+                        array_push($icon['collections'], array(
+                            'id' => $id
+                        ));
+                    }
+                }
+            } else {
+                foreach ($response->icons as $icon) {
+                    if (property_exists($icon, 'collections') === false) {
+                        $icon->collections = array();
+                        $standard = new stdClass();
+                        $standard->id = $id;
+                        array_push($icon->collections, $standard);
+                    }
+                }
+            }
+
+            // Done
             return $this->_associative
                 ? $response['icons']
                 : $response->icons;
@@ -378,5 +458,24 @@
             return $this->_associative
                 ? $response['uploads']
                 : $response->uploads;
+        }
+
+        /**
+         * notify
+         * 
+         * @access public
+         * @param  string $type
+         * @param  array $data (default: array())
+         * @param  boolean $live (default: true)
+         * @return false|array|stdClass
+         */
+        public function notify($type, array $data = array(), $live = true)
+        {
+            $path = '/notify/' . ($type);
+            $response = $this->_post($path, $data, $live);
+            if ($response === false) {
+                return false;
+            }
+            return $response;
         }
     }
