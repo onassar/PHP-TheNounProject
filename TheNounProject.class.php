@@ -106,7 +106,7 @@
                     OAUTH_HTTP_METHOD_GET
                 );
             } catch(OAuthException $exception) {
-                error_log($exception->getMessage());
+                // error_log($exception->getMessage());
                 return false;
             }
             return json_decode(
