@@ -1,7 +1,7 @@
 <?php
 
     // dependecy checks
-    if (!in_array('OAuth', get_loaded_extensions())) {
+    if (in_array('OAuth', get_loaded_extensions()) === false) {
         throw new Exception('OAuth extension needs to be installed.');
     }
 
@@ -10,71 +10,71 @@
      * 
      * PHP OAuth wrapper for The Noun Project, using PECL OAuth library
      * 
-     * @note   icon_url urls expire 24 hours after received
-     * @author Oliver Nassar <onassar@gmail.com>
-     * @see    https://github.com/onassar/PHP-TheNounProject
-     * @see    https://pecl.php.net/package/oauth
-     * @see    http://php.net/manual/en/book.oauth.php
+     * @note    icon_url urls expire 24 hours after received
+     * @link    https://github.com/onassar/PHP-TheNounProject
+     * @link    https://pecl.php.net/package/oauth
+     * @link    http://php.net/manual/en/book.oauth.php
+     * @author  Oliver Nassar <onassar@gmail.com>
      */
     class TheNounProject
     {
         /**
          * _associative
          * 
-         * @var    boolean
-         * @access protected
+         * @var     boolean
+         * @access  protected
          */
         protected $_associative;
 
         /**
          * _base
          * 
-         * @var    string
-         * @access protected
+         * @var     string
+         * @access  protected
          */
         protected $_base = 'https://api.thenounproject.com';
 
         /**
          * _connection
          * 
-         * @var    OAuth
-         * @access protected
+         * @var     OAuth
+         * @access  protected
          */
         protected $_connection;
 
         /**
          * _debug
          * 
-         * @var    boolean
-         * @access protected
+         * @var     boolean
+         * @access  protected
          */
         protected $_debug;
 
         /**
          * _key
          * 
-         * @var    string
-         * @access protected
+         * @var     string
+         * @access  protected
          */
         protected $_key;
 
         /**
          * _secret
          * 
-         * @var    string
-         * @access protected
+         * @var     string
+         * @access  protected
          */
         protected $_secret;
 
         /**
          * __construct
          * 
-         * @access public
-         * @param  string $key
-         * @param  string $secret
-         * @param  boolean $debug (default: false)
-         * @param  boolean $associative (default: true)
-         * @return void
+         * @access  public
+         * @param   string $key
+         * @param   string $secret
+         * @param   boolean $debug (default: false)
+         * @param   boolean $associative (default: true)
+         * @return  void
          */
         public function __construct(
             $key,
@@ -91,10 +91,10 @@
         /**
          * _get
          * 
-         * @access protected
-         * @param  string $path
-         * @param  array $options (default: array())
-         * @return false|array|stdClass
+         * @access  protected
+         * @param   string $path
+         * @param   array $options (default: array())
+         * @return  false|array|stdClass
          */
         public function _get($path, array $options = array())
         {
@@ -118,11 +118,11 @@
         /**
          * _post
          * 
-         * @access protected
-         * @param  string $path
-         * @param  array $data (default: array())
-         * @param  boolean $live (default: true)
-         * @return false|array|stdClass
+         * @access  protected
+         * @param   string $path
+         * @param   array $data (default: array())
+         * @param   boolean $live (default: true)
+         * @return  false|array|stdClass
          */
         public function _post($path, array $data = array(), $live = true)
         {
@@ -154,8 +154,8 @@
         /**
          * _setupConnection
          * 
-         * @access protected
-         * @return void
+         * @access  protected
+         * @return  void
          */
         public function _setupConnection()
         {
@@ -176,9 +176,9 @@
         /**
          * getAllCollections
          * 
-         * @access public
-         * @param  array $options (default: array())
-         * @return false|array|stdClass
+         * @access  public
+         * @param   array $options (default: array())
+         * @return  false|array|stdClass
          */
         public function getAllCollections(array $options = array())
         {
@@ -195,9 +195,9 @@
         /**
          * getCollectionById
          * 
-         * @access public
-         * @param  string $id
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $id
+         * @return  false|array|stdClass
          */
         public function getCollectionById($id)
         {
@@ -214,9 +214,9 @@
         /**
          * getCollectionBySlug
          * 
-         * @access public
-         * @param  string $string
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $string
+         * @return  false|array|stdClass
          */
         public function getCollectionBySlug($slug)
         {
@@ -238,10 +238,10 @@
          * it's associated collections, I scafold in the id of the current
          * lookup.
          * 
-         * @access public
-         * @param  string $id
-         * @param  array $options (default: array())
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $id
+         * @param   array $options (default: array())
+         * @return  false|array|stdClass
          */
         public function getCollectionIconsById($id, array $options = array())
         {
@@ -286,10 +286,10 @@
         /**
          * getCollectionIconsBySlug
          * 
-         * @access public
-         * @param  string $slug
-         * @param  array $options (default: array())
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $slug
+         * @param   array $options (default: array())
+         * @return  false|array|stdClass
          */
         public function getCollectionIconsBySlug(
             $slug,
@@ -308,9 +308,9 @@
         /**
          * getIconById
          * 
-         * @access public
-         * @param  string $id
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $id
+         * @return  false|array|stdClass
          */
         public function getIconById($id)
         {
@@ -327,9 +327,9 @@
         /**
          * getIconByTerm
          * 
-         * @access public
-         * @param  string $term
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $term
+         * @return  false|array|stdClass
          */
         public function getIconByTerm($term)
         {
@@ -346,10 +346,10 @@
         /**
          * getIconsByTerm
          * 
-         * @access public
-         * @param  string $term
-         * @param  array $options (default: array())
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $term
+         * @param   array $options (default: array())
+         * @return  false|array|stdClass
          */
         public function getIconsByTerm($term, array $options = array())
         {
@@ -369,9 +369,9 @@
         /**
          * getRecentIcons
          * 
-         * @access public
-         * @param  array $options (default: array())
-         * @return false|array|stdClass
+         * @access  public
+         * @param   array $options (default: array())
+         * @return  false|array|stdClass
          */
         public function getRecentIcons(array $options = array())
         {
@@ -388,8 +388,8 @@
         /**
          * getUsage
          * 
-         * @access public
-         * @return false|array|stdClass
+         * @access  public
+         * @return  false|array|stdClass
          */
         public function getUsage()
         {
@@ -404,10 +404,10 @@
         /**
          * getUserCollection
          * 
-         * @access public
-         * @param  string $userId
-         * @param  string $slug
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $userId
+         * @param   string $slug
+         * @return  false|array|stdClass
          */
         public function getUserCollection($userId, $slug)
         {
@@ -424,9 +424,9 @@
         /**
          * getUserCollections
          * 
-         * @access public
-         * @param  string $userId
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $userId
+         * @return  false|array|stdClass
          */
         public function getUserCollections($userId)
         {
@@ -443,10 +443,10 @@
         /**
          * getUserUploads
          * 
-         * @access public
-         * @param  string $username
-         * @param  array $options (default: array())
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $username
+         * @param   array $options (default: array())
+         * @return  false|array|stdClass
          */
         public function getUserUploads($username, array $options = array())
         {
@@ -463,11 +463,11 @@
         /**
          * notify
          * 
-         * @access public
-         * @param  string $type
-         * @param  array $data (default: array())
-         * @param  boolean $live (default: true)
-         * @return false|array|stdClass
+         * @access  public
+         * @param   string $type
+         * @param   array $data (default: array())
+         * @param   boolean $live (default: true)
+         * @return  false|array|stdClass
          */
         public function notify($type, array $data = array(), $live = true)
         {
