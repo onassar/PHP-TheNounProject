@@ -159,7 +159,7 @@
          */
         public function _setupConnection()
         {
-            if (is_null($this->_connection)) {
+            if (is_null($this->_connection) === true) {
                 $this->_connection = new OAuth(
                     $this->_key,
                     $this->_secret,
