@@ -130,7 +130,7 @@
             try {
                 $url = ($this->_base) . ($path);
                 if ($live === false) {
-                    $url .= '?test=1';
+                    $url = ($url) . '?test=1';
                 }
                 $this->_connection->fetch(
                     $url,
