@@ -182,19 +182,7 @@
          */
         protected function _generateNonce($int)
         {
-            $str = "";
-            for($i = 0; $i < $int; $i++) {
-                $rand = rand(0, 2);
-                $caps = chr(rand(65, 90));
-                $nums = chr(rand(48, 57));
-                $lows = chr(rand(97, 122));
-                
-                $array = array($caps, $nums, $lows);
-                
-                $str .= $array[$rand];
-            }
-            
-            return $str;
+            return md5(rand());
         }
 
         /**
