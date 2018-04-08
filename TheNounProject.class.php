@@ -169,8 +169,20 @@
                 if ($this->_debug === true) {
                     $this->_connection->enableDebug();
                 }
-                $this->_connection->setNonce(rand());
+                $this->_connection->setNonce($this->_generateNonce(8));
             }
+        }
+
+        /**
+         * _generateNonce
+         * 
+         * @access protected
+         * @param integer $int
+         * @return string
+         */
+        protected function _generateNonce($int)
+        {
+            return md5(rand());
         }
 
         /**
