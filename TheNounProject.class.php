@@ -169,8 +169,8 @@
                 if ($this->_debug === true) {
                     $this->_connection->enableDebug();
                 }
-                $this->_connection->setNonce(rand());
             }
+            $this->_connection->setNonce(rand());
         }
 
         /**
