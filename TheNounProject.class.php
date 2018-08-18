@@ -2,7 +2,8 @@
 
     // dependecy checks
     if (in_array('OAuth', get_loaded_extensions()) === false) {
-        throw new Exception('OAuth extension needs to be installed.');
+        $msg = 'OAuth extension needs to be installed.';
+        throw new Exception($msg);
     }
 
     /**
@@ -19,17 +20,9 @@
     class TheNounProject
     {
         /**
-         * _associative
-         * 
-         * @var     boolean
-         * @access  protected
-         */
-        protected $_associative;
-
-        /**
          * _base
          * 
-         * @var     string
+         * @var     string (default: 'https://api.thenounproject.com')
          * @access  protected
          */
         protected $_base = 'https://api.thenounproject.com';
@@ -37,34 +30,34 @@
         /**
          * _connection
          * 
-         * @var     OAuth
+         * @var     null|OAuth (default: null)
          * @access  protected
          */
-        protected $_connection;
+        protected $_connection = null;
 
         /**
          * _debug
          * 
-         * @var     boolean
+         * @var     bool (default: false)
          * @access  protected
          */
-        protected $_debug;
+        protected $_debug = false;
 
         /**
          * _key
          * 
-         * @var     string
+         * @var     null|string (default: null)
          * @access  protected
          */
-        protected $_key;
+        protected $_key = null;
 
         /**
          * _secret
          * 
-         * @var     string
+         * @var     null|string (default: null)
          * @access  protected
          */
-        protected $_secret;
+        protected $_secret = null;
 
         /**
          * __construct
@@ -72,20 +65,14 @@
          * @access  public
          * @param   string $key
          * @param   string $secret
-         * @param   boolean $debug (default: false)
-         * @param   boolean $associative (default: true)
+         * @param   bool $debug (default: false)
          * @return  void
          */
-        public function __construct(
-            $key,
-            $secret,
-            $debug = false,
-            $associative = true
-        ) {
+        public function __construct(string $key, string $secret, bool $debug = false)
+        {
             $this->_key = $key;
             $this->_secret = $secret;
             $this->_debug = $debug;
-            $this->_associative = $associative;
         }
 
         /**
@@ -93,26 +80,76 @@
          * 
          * @access  protected
          * @param   string $path
-         * @param   array $options (default: array())
-         * @return  false|array|stdClass
+         * @param   array $params (default: array())
+         * @return  null|array
          */
-        public function _get($path, array $options = array())
+        protected function _get(string $path, array $params = array()): ?array
         {
+            $params = $this->_getCleanedParams($params);
             $this->_setupConnection();
-            try {
-                $this->_connection->fetch(
-                    ($this->_base) . ($path),
-                    $options,
-                    OAUTH_HTTP_METHOD_GET
-                );
-            } catch(OAuthException $exception) {
-                // error_log($exception->getMessage());
-                return false;
+            $url = ($this->_base) . ($path);
+            $method = OAUTH_HTTP_METHOD_GET;
+            $headers = array();
+            $response = $this->_requestUrl($url, $params, $method, $headers);
+            $response = json_decode($response, true);
+            return $response;
+        }
+
+        /**
+         * _getCleanedParams
+         * 
+         * @access  protected
+         * @param   array $params
+         * @return  array
+         */
+        protected function _getCleanedParams(array $params): array
+        {
+            $key = 'limit_to_public_domain';
+            if (isset($params[$key]) === true) {
+                $params[$key] = (int) $params[$key];
             }
-            return json_decode(
-                $this->_connection->getLastResponse(),
-                $this->_associative
+            return $params;
+        }
+
+        /**
+         * _getNormalizeCollectionIconsResponse
+         * 
+         * Normalizes the response when icons don't return collection details.
+         * Maybe this should not be done here, but it seemed silly for the
+         * response to not include the collections that icons are part of.
+         * 
+         * @access  protected
+         * @param   int $collectionId
+         * @param   array $icons
+         * @return  array
+         */
+        protected function _getNormalizeCollectionIconsResponse(int $collectionId, array $icons): array
+        {
+            foreach ($icons as &$icon) {
+                if (isset($icon['collections']) === true) {
+                    continue;
+                }
+                $icon['collections'] = array();
+                array_push($icon['collections'], array(
+                    'id' => $collectionId
+                ));
+            }
+            return $icons;
+        }
+
+        /**
+         * _getPostHeaders
+         * 
+         * @access  protected
+         * @return  array
+         */
+        protected function _getPostHeaders(): array
+        {
+            $headers = array(
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
             );
+            return $headers;
         }
 
         /**
@@ -121,34 +158,48 @@
          * @access  protected
          * @param   string $path
          * @param   array $data (default: array())
-         * @param   boolean $live (default: true)
-         * @return  false|array|stdClass
+         * @param   bool $live (default: true)
+         * @return  null|array
          */
-        public function _post($path, array $data = array(), $live = true)
+        protected function _post(string $path, array $data = array(), bool $live = true): ?array
         {
             $this->_setupConnection();
-            try {
-                $url = ($this->_base) . ($path);
-                if ($live === false) {
-                    $url = ($url) . '?test=1';
-                }
-                $this->_connection->fetch(
-                    $url,
-                    json_encode($data),
-                    OAUTH_HTTP_METHOD_POST,
-                    array(
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json'
-                    )
-                );
-            } catch(OAuthException $exception) {
-                error_log($exception->getMessage());
-                return false;
+            $url = ($this->_base) . ($path);
+            if ($live === false) {
+                $url = ($url) . '?test=1';
             }
-            return json_decode(
-                $this->_connection->getLastResponse(),
-                $this->_associative
-            );
+            $params = json_encode($data);
+            $method = OAUTH_HTTP_METHOD_POST;
+            $headers = $this->_getPostHeaders();
+            $response = $this->_requestUrl($url, $params, $method, $headers);
+            $response = json_decode($response, true);
+            return $response;
+        }
+
+        /**
+         * _requestUrl
+         * 
+         * @access  protected
+         * @param   string $path
+         * @param   string|array $params
+         * @param   string $method
+         * @param   array $headers
+         * @return  null|string
+         */
+        protected function _requestUrl(string $url, $params, string $method, array $headers): ?string
+        {
+            try {
+                $this->_connection->fetch($url, $params, $method, $headers);
+            } catch(OAuthException $exception) {
+                $msg = $exception->getMessage();
+                error_log($msg);
+                return null;
+            }
+            $response = $this->_connection->getLastResponse();
+            if (is_string($response) === false) {
+                return null;
+            }
+            return $response;
         }
 
         /**
@@ -157,20 +208,21 @@
          * @access  protected
          * @return  void
          */
-        public function _setupConnection()
+        protected function _setupConnection(): void
         {
             if (is_null($this->_connection) === true) {
-                $this->_connection = new OAuth(
-                    $this->_key,
-                    $this->_secret,
-                    OAUTH_SIG_METHOD_HMACSHA1,
-                    OAUTH_AUTH_TYPE_URI
-                );
+                $key = $this->_key;
+                $secret = $this->_secret;
+                $method = OAUTH_SIG_METHOD_HMACSHA1;
+                $authType = OAUTH_AUTH_TYPE_URI;
+                $connection = new OAuth($key, $secret, $method, $authType);
+                $this->_connection = $connection;
                 if ($this->_debug === true) {
                     $this->_connection->enableDebug();
                 }
             }
-            $this->_connection->setNonce(rand());
+            $nonce = rand();
+            $this->_connection->setNonce($nonce);
         }
 
         /**
@@ -178,37 +230,39 @@
          * 
          * @access  public
          * @param   array $options (default: array())
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getAllCollections(array $options = array())
+        public function getAllCollections(array $options = array()): ?array
         {
             $path = '/collections';
             $response = $this->_get($path, $options);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['collections']
-                : $response->collections;
+            if (isset($response['collections']) === false) {
+                return null;
+            }
+            return $response['collections'];
         }
 
         /**
          * getCollectionById
          * 
          * @access  public
-         * @param   string $id
-         * @return  false|array|stdClass
+         * @param   int $id
+         * @return  null|array
          */
-        public function getCollectionById($id)
+        public function getCollectionById(int $id): ?array
         {
             $path = '/collection/' . ($id);
             $response = $this->_get($path);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['collection']
-                : $response->collection;
+            if (isset($response['collection']) === false) {
+                return null;
+            }
+            return $response['collection'];
         }
 
         /**
@@ -216,18 +270,19 @@
          * 
          * @access  public
          * @param   string $string
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getCollectionBySlug($slug)
+        public function getCollectionBySlug(string $slug): ?array
         {
             $path = '/collection/' . ($slug);
             $response = $this->_get($path);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['collection']
-                : $response->collection;
+            if (isset($response['collection']) === false) {
+                return null;
+            }
+            return $response['collection'];
         }
 
         /**
@@ -239,48 +294,23 @@
          * lookup.
          * 
          * @access  public
-         * @param   string $id
+         * @param   int $id
          * @param   array $options (default: array())
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getCollectionIconsById($id, array $options = array())
+        public function getCollectionIconsById(int $id, array $options = array()): ?array
         {
             $path = '/collection/' . ($id) . '/icons';
             $response = $this->_get($path, $options);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-
-            /**
-             * Normalizes the response when icons don't return collection
-             * details. Maybe this should not be done here, but it seemed silly
-             * for the response to not include the collections that icons are
-             * part of.
-             */
-            if ($this->_associative === true) {
-                foreach ($response['icons'] as &$icon) {
-                    if (isset($icon['collections']) === false) {
-                        $icon['collections'] = array();
-                        array_push($icon['collections'], array(
-                            'id' => $id
-                        ));
-                    }
-                }
-            } else {
-                foreach ($response->icons as $icon) {
-                    if (property_exists($icon, 'collections') === false) {
-                        $icon->collections = array();
-                        $standard = new stdClass();
-                        $standard->id = $id;
-                        array_push($icon->collections, $standard);
-                    }
-                }
+            if (isset($response['icons']) === false) {
+                return null;
             }
-
-            // Done
-            return $this->_associative
-                ? $response['icons']
-                : $response->icons;
+            $icons = $response['icons'];
+            $icons = $this->_getNormalizeCollectionIconsResponse($id, $icons);
+            return $icons;
         }
 
         /**
@@ -289,39 +319,39 @@
          * @access  public
          * @param   string $slug
          * @param   array $options (default: array())
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getCollectionIconsBySlug(
-            $slug,
-            array $options = array()
-        ) {
+        public function getCollectionIconsBySlug(string $slug, array $options = array()): ?array
+        {
             $path = '/collection/' . ($slug) . '/icons';
             $response = $this->_get($path, $options);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['icons']
-                : $response->icons;
+            if (isset($response['icons']) === false) {
+                return null;
+            }
+            return $response['icons'];
         }
 
         /**
          * getIconById
          * 
          * @access  public
-         * @param   string $id
-         * @return  false|array|stdClass
+         * @param   int $id
+         * @return  null|array
          */
-        public function getIconById($id)
+        public function getIconById(int $id): ?array
         {
             $path = '/icon/' . ($id);
             $response = $this->_get($path);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['icon']
-                : $response->icon;
+            if (isset($response['icon']) === false) {
+                return null;
+            }
+            return $response['icon'];
         }
 
         /**
@@ -329,18 +359,19 @@
          * 
          * @access  public
          * @param   string $term
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getIconByTerm($term)
+        public function getIconByTerm(string $term): ?array
         {
             $path = '/icon/' . ($term);
             $response = $this->_get($path);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['icon']
-                : $response->icon;
+            if (isset($response['icon']) === false) {
+                return null;
+            }
+            return $response['icon'];
         }
 
         /**
@@ -349,21 +380,19 @@
          * @access  public
          * @param   string $term
          * @param   array $options (default: array())
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getIconsByTerm($term, array $options = array())
+        public function getIconsByTerm(string $term, array $options = array()): ?array
         {
             $path = '/icons/' . ($term);
-            if (isset($options['limit_to_public_domain']) === true) {
-                $options['limit_to_public_domain'] = (int) $options['limit_to_public_domain'];
-            }
             $response = $this->_get($path, $options);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['icons']
-                : $response->icons;
+            if (isset($response['icons']) === false) {
+                return null;
+            }
+            return $response['icons'];
         }
 
         /**
@@ -371,32 +400,33 @@
          * 
          * @access  public
          * @param   array $options (default: array())
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getRecentIcons(array $options = array())
+        public function getRecentIcons(array $options = array()): ?array
         {
             $path = '/icons/recent_uploads';
             $response = $this->_get($path, $options);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['icons']
-                : $response->icons;
+            if (isset($response['icons']) === false) {
+                return null;
+            }
+            return $response['icons'];
         }
 
         /**
          * getUsage
          * 
          * @access  public
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getUsage()
+        public function getUsage(): ?array
         {
             $path = '/oauth/usage';
             $response = $this->_get($path);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
             return $response;
         }
@@ -405,39 +435,41 @@
          * getUserCollection
          * 
          * @access  public
-         * @param   string $userId
+         * @param   int $userId
          * @param   string $slug
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getUserCollection($userId, $slug)
+        public function getUserCollection(int $userId, string $slug): ?array
         {
             $path = '/user/' . ($userId) . '/collections/' . ($slug);
             $response = $this->_get($path);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['collection']
-                : $response->collection;
+            if (isset($response['collection']) === false) {
+                return null;
+            }
+            return $response['collection'];
         }
 
         /**
          * getUserCollections
          * 
          * @access  public
-         * @param   string $userId
-         * @return  false|array|stdClass
+         * @param   int $userId
+         * @return  null|array
          */
-        public function getUserCollections($userId)
+        public function getUserCollections(int $userId): ?array
         {
             $path = '/user/' . ($userId) . '/collections';
             $response = $this->_get($path);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['collections']
-                : $response->collections;
+            if (isset($response['collections']) === false) {
+                return null;
+            }
+            return $response['collections'];
         }
 
         /**
@@ -446,18 +478,19 @@
          * @access  public
          * @param   string $username
          * @param   array $options (default: array())
-         * @return  false|array|stdClass
+         * @return  null|array
          */
-        public function getUserUploads($username, array $options = array())
+        public function getUserUploads(string $username, array $options = array()): ?array
         {
             $path = '/user/' . ($username) . '/uploads';
             $response = $this->_get($path, $options);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
-            return $this->_associative
-                ? $response['uploads']
-                : $response->uploads;
+            if (isset($response['uploads']) === false) {
+                return null;
+            }
+            return $response['uploads'];
         }
 
         /**
@@ -466,15 +499,15 @@
          * @access  public
          * @param   string $type
          * @param   array $data (default: array())
-         * @param   boolean $live (default: true)
-         * @return  false|array|stdClass
+         * @param   bool $live (default: true)
+         * @return  null|array
          */
-        public function notify($type, array $data = array(), $live = true)
+        public function notify(string $type, array $data = array(), bool $live = true): ?array
         {
             $path = '/notify/' . ($type);
             $response = $this->_post($path, $data, $live);
-            if ($response === false) {
-                return false;
+            if ($response === null) {
+                return null;
             }
             return $response;
         }
