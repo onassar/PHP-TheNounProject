@@ -191,8 +191,8 @@
             try {
                 $this->_connection->fetch($url, $params, $method, $headers);
             } catch(OAuthException $exception) {
-                $msg = $exception->getMessage();
-                error_log($msg);
+                // $msg = $exception->getMessage();
+                // error_log($msg);
                 return null;
             }
             $response = $this->_connection->getLastResponse();
