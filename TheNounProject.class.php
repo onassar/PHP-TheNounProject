@@ -12,6 +12,7 @@
      * PHP OAuth wrapper for The Noun Project, using PECL OAuth library
      * 
      * @note    icon_url urls expire 24 hours after received
+     * @link    https://api.thenounproject.com/
      * @link    https://github.com/onassar/PHP-TheNounProject
      * @link    https://pecl.php.net/package/oauth
      * @link    http://php.net/manual/en/book.oauth.php
@@ -50,6 +51,14 @@
          * @access  protected
          */
         protected $_key = null;
+
+        /**
+         * _maxPerPage
+         * 
+         * @var     int (default: 100)
+         * @access  protected
+         */
+        protected $_maxPerPage = 100;
 
         /**
          * _secret
