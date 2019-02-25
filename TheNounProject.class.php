@@ -99,7 +99,7 @@
             $url = ($this->_base) . ($path);
             $method = OAUTH_HTTP_METHOD_GET;
             $headers = array();
-            $response = $this->_requestUrl($url, $params, $method, $headers);
+            $response = $this->_requestURL($url, $params, $method, $headers);
             $response = json_decode($response, true);
             return $response;
         }
@@ -180,13 +180,13 @@
             $params = json_encode($data);
             $method = OAUTH_HTTP_METHOD_POST;
             $headers = $this->_getPostHeaders();
-            $response = $this->_requestUrl($url, $params, $method, $headers);
+            $response = $this->_requestURL($url, $params, $method, $headers);
             $response = json_decode($response, true);
             return $response;
         }
 
         /**
-         * _requestUrl
+         * _requestURL
          * 
          * @access  protected
          * @param   string $path
@@ -195,7 +195,7 @@
          * @param   array $headers
          * @return  null|string
          */
-        protected function _requestUrl(string $url, $params, string $method, array $headers): ?string
+        protected function _requestURL(string $url, $params, string $method, array $headers): ?string
         {
             try {
                 $this->_connection->fetch($url, $params, $method, $headers);
