@@ -197,14 +197,15 @@
          */
         protected function _requestURL(string $url, $params, string $method, array $headers): ?string
         {
+            $connection = $this->_connection;
             try {
-                $this->_connection->fetch($url, $params, $method, $headers);
+                $connection->fetch($url, $params, $method, $headers);
             } catch(OAuthException $exception) {
                 // $msg = $exception->getMessage();
                 // error_log($msg);
                 return null;
             }
-            $response = $this->_connection->getLastResponse();
+            $response = $connection->getLastResponse();
             if (is_string($response) === false) {
                 return null;
             }
