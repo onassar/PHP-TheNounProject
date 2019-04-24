@@ -23,48 +23,48 @@
         /**
          * _base
          * 
-         * @var     string (default: 'https://api.thenounproject.com')
          * @access  protected
+         * @var     string (default: 'https://api.thenounproject.com')
          */
         protected $_base = 'https://api.thenounproject.com';
 
         /**
          * _connection
          * 
-         * @var     null|OAuth (default: null)
          * @access  protected
+         * @var     null|OAuth (default: null)
          */
         protected $_connection = null;
 
         /**
          * _debug
          * 
-         * @var     bool (default: false)
          * @access  protected
+         * @var     bool (default: false)
          */
         protected $_debug = false;
 
         /**
          * _key
          * 
-         * @var     null|string (default: null)
          * @access  protected
+         * @var     null|string (default: null)
          */
         protected $_key = null;
 
         /**
          * _maxPerPage
          * 
-         * @var     int (default: 100)
          * @access  protected
+         * @var     int (default: 100)
          */
         protected $_maxPerPage = 100;
 
         /**
          * _secret
          * 
-         * @var     null|string (default: null)
          * @access  protected
+         * @var     null|string (default: null)
          */
         protected $_secret = null;
 
