@@ -436,7 +436,7 @@
          */
         public function getUserUploads(string $username, array $options = array()): ?array
         {
-            $path = '/user/' . ($username) . '/collection';
+            $path = '/user/' . ($username) . '/uploads';
             $response = $this->_get($path, $options);
             $uploads = $response['uploads'] ?? null;
             return $uploads;
