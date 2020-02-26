@@ -246,13 +246,8 @@
         {
             $path = '/collections';
             $response = $this->_get($path, $options);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['collections']) === false) {
-                return null;
-            }
-            return $response['collections'];
+            $collections = $response['collections'] ?? null;
+            return $collections;
         }
 
         /**
@@ -266,13 +261,8 @@
         {
             $path = '/collection/' . ($id);
             $response = $this->_get($path);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['collection']) === false) {
-                return null;
-            }
-            return $response['collection'];
+            $collection = $response['collection'] ?? null;
+            return $collection;
         }
 
         /**
@@ -286,13 +276,8 @@
         {
             $path = '/collection/' . ($slug);
             $response = $this->_get($path);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['collection']) === false) {
-                return null;
-            }
-            return $response['collection'];
+            $collection = $response['collection'] ?? null;
+            return $collection;
         }
 
         /**
@@ -312,13 +297,10 @@
         {
             $path = '/collection/' . ($id) . '/icons';
             $response = $this->_get($path, $options);
-            if ($response === null) {
-                return null;
+            $icons = $response['icons'] ?? null;
+            if ($icons === null) {
+                return $icons;
             }
-            if (isset($response['icons']) === false) {
-                return null;
-            }
-            $icons = $response['icons'];
             $icons = $this->_getNormalizeCollectionIconsResponse($id, $icons);
             return $icons;
         }
@@ -335,13 +317,8 @@
         {
             $path = '/collection/' . ($slug) . '/icons';
             $response = $this->_get($path, $options);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['icons']) === false) {
-                return null;
-            }
-            return $response['icons'];
+            $icons = $response['icons'] ?? null;
+            return $icons;
         }
 
         /**
@@ -355,13 +332,8 @@
         {
             $path = '/icon/' . ($id);
             $response = $this->_get($path);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['icon']) === false) {
-                return null;
-            }
-            return $response['icon'];
+            $icon = $response['icon'] ?? null;
+            return $icon;
         }
 
         /**
@@ -375,13 +347,8 @@
         {
             $path = '/icon/' . ($term);
             $response = $this->_get($path);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['icon']) === false) {
-                return null;
-            }
-            return $response['icon'];
+            $icon = $response['icon'] ?? null;
+            return $icon;
         }
 
         /**
@@ -396,13 +363,8 @@
         {
             $path = '/icons/' . ($term);
             $response = $this->_get($path, $options);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['icons']) === false) {
-                return null;
-            }
-            return $response['icons'];
+            $icons = $response['icons'] ?? null;
+            return $icons;
         }
 
         /**
@@ -416,13 +378,8 @@
         {
             $path = '/icons/recent_uploads';
             $response = $this->_get($path, $options);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['icons']) === false) {
-                return null;
-            }
-            return $response['icons'];
+            $icons = $response['icons'] ?? null;
+            return $icons;
         }
 
         /**
@@ -435,9 +392,6 @@
         {
             $path = '/oauth/usage';
             $response = $this->_get($path);
-            if ($response === null) {
-                return null;
-            }
             return $response;
         }
 
@@ -453,13 +407,8 @@
         {
             $path = '/user/' . ($userId) . '/collections/' . ($slug);
             $response = $this->_get($path);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['collection']) === false) {
-                return null;
-            }
-            return $response['collection'];
+            $collection = $response['collection'] ?? null;
+            return $collection;
         }
 
         /**
@@ -473,13 +422,8 @@
         {
             $path = '/user/' . ($userId) . '/collections';
             $response = $this->_get($path);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['collections']) === false) {
-                return null;
-            }
-            return $response['collections'];
+            $collections = $response['collections'] ?? null;
+            return $collections;
         }
 
         /**
@@ -492,15 +436,10 @@
          */
         public function getUserUploads(string $username, array $options = array()): ?array
         {
-            $path = '/user/' . ($username) . '/uploads';
+            $path = '/user/' . ($username) . '/collection';
             $response = $this->_get($path, $options);
-            if ($response === null) {
-                return null;
-            }
-            if (isset($response['uploads']) === false) {
-                return null;
-            }
-            return $response['uploads'];
+            $uploads = $response['uploads'] ?? null;
+            return $uploads;
         }
 
         /**
@@ -516,9 +455,6 @@
         {
             $path = '/notify/' . ($type);
             $response = $this->_post($path, $data, $live);
-            if ($response === null) {
-                return null;
-            }
             return $response;
         }
     }
