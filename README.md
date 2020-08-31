@@ -1,10 +1,8 @@
-PHP-TheNounProject
-===
+# PHP-TheNounProject
+PHP SDK for running queries against the millions of icons provided by
+[The Noun Project](https://thenounproject.com/). Includes recursive searches.
 
-Simple PHP wrapper for The Noun Project's API, using PECL's OAuth extension for
-authentication.
-
-### Sample Call
+### Sample Usage
 
 ``` php
 require_once '/path/to/TheNounProject.class.php';
