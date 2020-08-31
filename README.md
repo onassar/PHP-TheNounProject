@@ -1,20 +1,19 @@
-# PHP-TheNounProject
+PHP-TheNounProject
+===
 
-Simple PHP wrapper for The Noun Project's API, using PECL's OAuth extension for authentication.
+Simple PHP wrapper for The Noun Project's API, using PECL's OAuth extension for
+authentication.
 
 ### Sample Call
 
 ``` php
-<?php
-    require_once '/path/to/TheNounProject.class.php';
-    $key  = '*****';
-    $secret = '*****';
-    $theNounProject = new TheNounProject($key, $secret);
-    $icons = $theNounProject->getIconsByTerm(
-        'happy',
-        array('limit' => 10)
-    );
-    print_r($icons);
-    exit(0);
-
+require_once '/path/to/TheNounProject.class.php';
+$key  = '*****';
+$secret = '*****';
+$theNounProject = new TheNounProject($key, $secret);
+$limit = 10;
+$options = compact('limit');
+$icons = $theNounProject->getIconsByTerm('happy', $options);
+print_r($icons);
+exit(0);
 ```

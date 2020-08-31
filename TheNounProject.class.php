@@ -53,14 +53,6 @@
         protected $_key = null;
 
         /**
-         * _maxPerPage
-         * 
-         * @access  protected
-         * @var     int (default: 100)
-         */
-        protected $_maxPerPage = 100;
-
-        /**
          * _secret
          * 
          * @access  protected
