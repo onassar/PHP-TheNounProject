@@ -1,6 +1,6 @@
 # PHP-TheNounProject
 PHP SDK for running queries against the millions of icons provided by
-[The Noun Project](https://thenounproject.com/). Includes recursive searches.
+[The Noun Project](https://thenounproject.com/).
 
 ### Sample Usage
 
